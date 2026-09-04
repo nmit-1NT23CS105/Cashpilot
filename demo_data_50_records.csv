@@ -1,0 +1,51 @@
+type,name,phone,email,amount,paid_amount,due_days,invoice_number,bill_number,credit_days,credit_limit,contact_person,category,criticality,payment_terms,recurring
+buyer,Metro Retail Hub,9876500001,accounts@metroretail.example,0,0,15,,,30,350000,,,,,
+buyer,GreenCart Stores,9876500002,finance@greencart.example,0,0,30,,,30,500000,,,,,
+buyer,Sharma General Store,9876500003,owner@sharmageneral.example,0,0,15,,,15,250000,,,,,
+buyer,CityMart Wholesale,9876500004,payments@citymart.example,0,0,21,,,21,400000,,,,,
+buyer,FreshWay Supermarket,9876500005,accounts@freshway.example,0,0,30,,,30,750000,,,,,
+buyer,NorthStar Traders,9876500006,finance@northstar.example,0,0,15,,,15,300000,,,,,
+buyer,DailyNeeds Bazaar,9876500007,accounts@dailyneeds.example,0,0,21,,,21,275000,,,,,
+buyer,Om Sai Distributors,9876500008,owner@omsaidist.example,0,0,30,,,30,600000,,,,,
+buyer,ValueBasket Retail,9876500009,payments@valuebasket.example,0,0,15,,,15,325000,,,,,
+buyer,Prime Corner Shop,9876500010,accounts@primecorner.example,0,0,21,,,21,225000,,,,,
+seller,Apex FMCG Supplies,9811000001,accounts@apexfmcg.example,0,0,15,,,,,Ravi Mehta,Inventory Supplier,HIGH,NET_15,
+seller,National Packaging Co,9811000002,billing@nationalpack.example,0,0,30,,,,,Anita Shah,Packaging,MEDIUM,NET_30,
+seller,BlueLine Logistics,9811000003,finance@blueline.example,0,0,15,,,,,Karan Joshi,Logistics,HIGH,NET_15,
+seller,Sunrise Foods Ltd,9811000004,accounts@sunrisefoods.example,0,0,21,,,,,Meera Nair,Inventory Supplier,CRITICAL,NET_21,
+seller,QuickPrint Services,9811000005,billing@quickprint.example,0,0,15,,,,,Vikram Rao,Printing,LOW,NET_15,
+seller,EverFresh Beverages,9811000006,accounts@everfresh.example,0,0,30,,,,,Pooja Iyer,Inventory Supplier,HIGH,NET_30,
+seller,SecureTech Systems,9811000007,finance@securetech.example,0,0,30,,,,,Arjun Patel,Technology,MEDIUM,NET_30,
+seller,GreenLeaf Products,9811000008,accounts@greenleaf.example,0,0,21,,,,,Neha Kapoor,Inventory Supplier,HIGH,NET_21,
+seller,Metro Utilities,9811000009,billing@metutilities.example,0,0,15,,,,,Suresh Kumar,Utilities,CRITICAL,NET_15,
+seller,FastTrack Transport,9811000010,accounts@fasttrack.example,0,0,15,,,,,Ishita Sen,Transport,MEDIUM,NET_15,
+sale,Metro Retail Hub,9876500001,accounts@metroretail.example,125000,25000,7,DEMO-INV-001,,,,,,,,,
+sale,GreenCart Stores,9876500002,finance@greencart.example,185000,0,15,DEMO-INV-002,,,,,,,,,
+sale,Sharma General Store,9876500003,owner@sharmageneral.example,76000,16000,10,DEMO-INV-003,,,,,,,,,
+sale,CityMart Wholesale,9876500004,payments@citymart.example,240000,0,20,DEMO-INV-004,,,,,,,,,
+sale,FreshWay Supermarket,9876500005,accounts@freshway.example,315000,50000,25,DEMO-INV-005,,,,,,,,,
+sale,NorthStar Traders,9876500006,finance@northstar.example,92000,0,5,DEMO-INV-006,,,,,,,,,
+sale,DailyNeeds Bazaar,9876500007,accounts@dailyneeds.example,148000,48000,12,DEMO-INV-007,,,,,,,,,
+sale,Om Sai Distributors,9876500008,owner@omsaidist.example,275000,0,30,DEMO-INV-008,,,,,,,,,
+sale,ValueBasket Retail,9876500009,payments@valuebasket.example,110000,10000,8,DEMO-INV-009,,,,,,,,,
+sale,Prime Corner Shop,9876500010,accounts@primecorner.example,68000,0,18,DEMO-INV-010,,,,,,,,,
+purchase,Apex FMCG Supplies,9811000001,accounts@apexfmcg.example,210000,0,5,,DEMO-BILL-001,,,,Ravi Mehta,Inventory Supplier,CRITICAL,NET_15,
+purchase,National Packaging Co,9811000002,billing@nationalpack.example,85000,15000,20,,DEMO-BILL-002,,,,Anita Shah,Packaging,MEDIUM,NET_30,
+purchase,BlueLine Logistics,9811000003,finance@blueline.example,46000,0,8,,DEMO-BILL-003,,,,Karan Joshi,Logistics,HIGH,NET_15,
+purchase,Sunrise Foods Ltd,9811000004,accounts@sunrisefoods.example,175000,25000,12,,DEMO-BILL-004,,,,Meera Nair,Inventory Supplier,HIGH,NET_21,
+purchase,QuickPrint Services,9811000005,billing@quickprint.example,22000,0,3,,DEMO-BILL-005,,,,Vikram Rao,Printing,LOW,NET_15,
+purchase,EverFresh Beverages,9811000006,accounts@everfresh.example,132000,0,25,,DEMO-BILL-006,,,,Pooja Iyer,Inventory Supplier,HIGH,NET_30,
+purchase,SecureTech Systems,9811000007,finance@securetech.example,68000,18000,18,,DEMO-BILL-007,,,,Arjun Patel,Technology,MEDIUM,NET_30,
+purchase,GreenLeaf Products,9811000008,accounts@greenleaf.example,99000,0,10,,DEMO-BILL-008,,,,Neha Kapoor,Inventory Supplier,HIGH,NET_21,
+purchase,Metro Utilities,9811000009,billing@metutilities.example,41000,0,2,,DEMO-BILL-009,,,,Suresh Kumar,Utilities,CRITICAL,NET_15,
+purchase,FastTrack Transport,9811000010,accounts@fasttrack.example,57000,7000,15,,DEMO-BILL-010,,,,Ishita Sen,Transport,MEDIUM,NET_15,
+expense,Warehouse rent,,,45000,0,0,,,,,,,,,true
+expense,Staff salaries,,,125000,0,0,,,,,,,,,true
+expense,Delivery fuel,,,18500,0,0,,,,,,,,,false
+expense,Electricity bill,,,12750,0,0,,,,,,,,,true
+expense,Packaging supplies,,,9200,0,0,,,,,,,,,false
+expense,Cloud software,,,6800,0,0,,,,,,,,,true
+expense,Vehicle maintenance,,,24500,0,0,,,,,,,,,false
+expense,Internet and phone,,,4300,0,0,,,,,,,,,true
+expense,Office stationery,,,3150,0,0,,,,,,,,,false
+expense,Marketing campaign,,,27500,0,0,,,,,,,,,false

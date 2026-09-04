@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# Local databases and runtime logs
+*.db
+*.db-shm
+*.db-wal
+*.log
+
+# Node / Vite
+node_modules/
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Editors and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,12 @@
+type,name,amount,phone,email,address,credit_days,credit_limit,invoice_number,bill_number,due_days,contact_person,category,criticality,payment_terms,paid_amount,recurring,category_type
+buyer,Northstar Retail,0,+91 90000 11111,accounts@northstar.example,12 Market Road,15,300000,,,,,,,,,
+buyer,Greenline Stores,0,+91 90000 22222,finance@greenline.example,45 Lake Avenue,30,500000,,,,,,,,,
+seller,Sunrise Foods,0,+91 90000 33333,billing@sunrise.example,8 Industrial Estate,,, , ,Meera Shah,FMCG,HIGH,NET_15,,,
+seller,Swift Logistics,0,+91 90000 44444,ops@swift.example,22 Transport Lane,,,,, ,Arjun Rao,Logistics,MEDIUM,NET_30,,,
+sale,Northstar Retail,180000,,,,,,INV-2026-001,,7,,,,,60000,,
+sale,Greenline Stores,260000,,,,,,INV-2026-002,,30,,,,,0,,
+purchase,Sunrise Foods,95000,,,,,,,BILL-2026-001,10,Meera Shah,FMCG,HIGH,NET_15,0,
+purchase,Swift Logistics,42000,,,,,,,BILL-2026-002,20,Arjun Rao,Logistics,MEDIUM,NET_30,12000,
+expense,Warehouse utilities,18000,,,,,,,,,,,,,,,true,VARIABLE
+expense,Delivery fuel,12000,,,,,,,,,,,,,,,false,VARIABLE
+expense,Office supplies,8500,,,,,,,,,,,,,,,false,MISC
