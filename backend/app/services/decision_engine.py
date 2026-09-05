@@ -95,7 +95,7 @@ class DecisionEngine:
                 "confidence": stored_prediction.confidence_level,
             }
         else:
-            prediction = ml_repayment_service.predict_invoice_repayment(customer, invoice.outstanding_amount)
+            prediction = ml_repayment_service.predict_invoice_repayment(customer, invoice.outstanding_amount, db)
         probability = prediction["repayment_probability_15d"]
         expected_days = prediction["expected_payment_days"]
         expected_recovery = invoice.outstanding_amount * probability

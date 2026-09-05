@@ -6,6 +6,18 @@ from .database.db import engine, Base, SessionLocal, current_merchant_id
 from .database.models import LedgerAccount, Merchant, Owner
 from .api.routes import router, _owner
 
+AUTH_SECRET = os.getenv("CASHPILOT_AUTH_SECRET", "cashpilot-local-dev-secret-change-me")
+DEFAULT_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+]
+ALLOWED_ORIGINS = [
+    origin.strip() for origin in os.getenv("CASHPILOT_ALLOWED_ORIGINS", ",".join(DEFAULT_ALLOWED_ORIGINS)).split(",") if origin.strip()
+]
+RESET_DEMO_DATA = os.getenv("CASHPILOT_RESET_DEMO_DATA", "false").strip().lower() in {"1", "true", "yes"}
+
 app = FastAPI(
     title="CashPilot AI — Financial Autopilot for Distributors",
     description="AI-powered financial decision and liquidity automation engine",
@@ -15,7 +27,7 @@ app = FastAPI(
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[origin.strip() for origin in os.getenv("CASHPILOT_ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",") if origin.strip()],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -51,8 +63,34 @@ async def protect_business_api(request: Request, call_next):
     finally:
         current_merchant_id.set(None)
 
+def reset_demo_data() -> None:
+    with SessionLocal() as db:
+        for table_name in [
+            "ledger_entries",
+            "payments",
+            "customers",
+            "invoices",
+            "supplier_payables",
+            "expenses",
+            "ai_actions",
+            "action_approvals",
+            "repayment_predictions",
+            "cashflow_forecasts",
+            "audit_logs",
+        ]:
+            try:
+                db.execute(text(f"DELETE FROM {table_name}"))
+            except Exception:
+                continue
+        db.execute(text("DELETE FROM owners"))
+        db.execute(text("DELETE FROM merchants"))
+        db.commit()
+
+
 def init_db():
     Base.metadata.create_all(bind=engine)
+    if RESET_DEMO_DATA:
+        reset_demo_data()
     if engine.dialect.name == "sqlite":
         migration_columns = {
             "owners": ["merchant_id"],

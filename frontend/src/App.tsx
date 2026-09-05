@@ -114,6 +114,10 @@ export function App() {
         setActiveTab('overview');
     };
 
+    const hasBusinessData = Boolean(
+        customers.length || receivables.length || payables.length || expenses.length || actions.length ||
+        (kpis && (kpis.current_cash > 0 || kpis.total_receivables > 0 || kpis.total_payables > 0))
+    );
 
     const handleApproveAction = async (actionId: string) => {
         setActionError('');
@@ -152,7 +156,7 @@ export function App() {
     };
 
     if (!authReady) {
-        return <div className="min-h-screen bg-[#f4f1ed] flex items-center justify-center text-sm">Loading CashPilot...</div>;
+        return <div className="min-h-screen bg-[#f4f1ed] flex items-center justify-center text-sm">Loading your business page...</div>;
     }
 
     if (!localStorage.getItem('cashpilot_owner_token')) {
@@ -163,10 +167,11 @@ export function App() {
         if (loadError) {
             return (
                 <StatusScreen
-                    title="CashPilot could not load your data"
-                    message={`${loadError} Check that the backend is running, then try again.`}
+                    title="Your business data did not load"
+                    message={`${loadError} Please check that the server is running, then try again.`}
                     onAction={loadAllData}
                     busy={loading}
+                    tone="error"
                 />
             );
         }
@@ -175,7 +180,44 @@ export function App() {
                 <div className="w-14 h-14 rounded-2xl bg-black p-[2px] animate-pulse flex items-center justify-center">
                     <span className="text-white font-extrabold text-xl" style={{ fontFamily: 'Manrope, Inter, system-ui, sans-serif' }}>CP</span>
                 </div>
-                <div className="text-[#5d5f5f] text-sm" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>Loading your business data...</div>
+                <div className="text-[#5d5f5f] text-sm" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>Opening your business page...</div>
+            </div>
+        );
+    }
+
+    if (!hasBusinessData) {
+        return (
+            <div className="min-h-screen bg-[#f9f9f9] text-[#1b1b1b]" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+                <Navbar
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    onOpenOwner={() => setActiveTab('owner')}
+                    ownerName={ownerName}
+                />
+                <main className="max-w-6xl mx-auto px-4 py-8">
+                    <StatusScreen
+                        title="No business data yet"
+                        message="Add your first buyer, create a sale, or import your business file to start tracking money, cash flow, and AI help."
+                        actionLabel="Go to owner workspace"
+                        onAction={() => setActiveTab('owner')}
+                        tone="info"
+                    />
+
+                    <div className="mt-6 grid gap-4 md:grid-cols-3">
+                        <div className="rounded-2xl border border-[#d9d2ca] bg-white p-5 shadow-sm">
+                            <div className="text-sm font-bold text-[#1b1b1b]">Create a buyer</div>
+                            <p className="mt-2 text-sm text-[#5d5f5f]">Add a customer name and payment details to start tracking who owes you money.</p>
+                        </div>
+                        <div className="rounded-2xl border border-[#d9d2ca] bg-white p-5 shadow-sm">
+                            <div className="text-sm font-bold text-[#1b1b1b]">Create a sale</div>
+                            <p className="mt-2 text-sm text-[#5d5f5f]">Record the sale amount and due date so the AI can forecast your cash.</p>
+                        </div>
+                        <div className="rounded-2xl border border-[#d9d2ca] bg-white p-5 shadow-sm">
+                            <div className="text-sm font-bold text-[#1b1b1b]">Import a file</div>
+                            <p className="mt-2 text-sm text-[#5d5f5f]">Upload CSV or Excel files to bulk add customers, sales, and payment records.</p>
+                        </div>
+                    </div>
+                </main>
             </div>
         );
     }

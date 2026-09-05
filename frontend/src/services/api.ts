@@ -160,6 +160,7 @@ export const api = {
     }>('/ai/insights'),
 
     getAIOverview: () => fetchJson<AIOverview>('/ai/overview'),
+    retrainAIModel: () => fetchJson<{ status: string; sample_size: number; training_strategy: string; metrics: Record<string, unknown> }>('/ai/retrain', { method: 'POST' }),
     analyzeInvoice: (payload: Record<string, unknown>) => fetchJson<{ fields: Record<string, unknown>; confidence: number; duplicate_risk: string; warnings: string[]; recommended_action: string }>('/ai/invoice/analyze', { method: 'POST', body: JSON.stringify(payload) }),
     getAICompliance: () => fetchJson<{ gst_readiness: number; checks: Array<{ name: string; status: string; count: number }>; missing_due_dates: string[]; missing_customer_data: string[] }>('/ai/compliance'),
     runAIScenario: (payload: { collection_rate: number; sales_change_percent: number; expense_change_percent: number }) => fetchJson<{ current_cash: number; expected_recovery: number; projected_cash: number; buffer_gap: number; recommendation: string }>('/ai/scenario', { method: 'POST', body: JSON.stringify(payload) }),

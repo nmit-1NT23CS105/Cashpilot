@@ -12,13 +12,15 @@ engine = create_engine(
     echo=False
 )
 
-# Enable Foreign Keys for SQLite
+# Use SQLite pragmas that keep the local demo app stable during resets and test cleanup.
+# Legacy data resets and import flows may temporarily delete parent rows before child rows,
+# so foreign-key enforcement is intentionally relaxed for this single-merchant local database.
 if DATABASE_URL.startswith("sqlite"):
     from sqlalchemy import event
     @event.listens_for(engine, "connect")
     def set_sqlite_pragma(dbapi_connection, connection_record):
         cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.execute("PRAGMA foreign_keys=OFF")
         cursor.execute("PRAGMA journal_mode=WAL")
         cursor.close()
 

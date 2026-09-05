@@ -15,9 +15,17 @@ class AIIntelligenceService:
     @staticmethod
     def _customer_risk(customer: Customer) -> Dict:
         outstanding = customer.current_outstanding or 0.0
-        risk = max(0.0, min(100.0, 100.0 - (customer.reliability_score or 75.0)))
-        if customer.behavior_trend == "DETERIORATING":
-            risk = min(100.0, risk + 15.0)
+        credit_limit = customer.credit_limit or 1.0
+        balance_ratio = min(2.5, max(0.0, outstanding / max(1.0, credit_limit)))
+        history_quality = min(1.0, (customer.total_transactions_count or 0) / 10.0)
+        on_time_gap = max(0.0, 0.85 - (customer.on_time_payment_rate or 0.85))
+        delay_penalty = min(30.0, (customer.avg_payment_delay_days or 0.0) * 2.2)
+        overdue_penalty = min(25.0, (customer.overdue_count or 0) * 6.0)
+        trend_penalty = 15.0 if customer.behavior_trend == "DETERIORATING" else 0.0
+        ratio_penalty = max(0.0, (balance_ratio - 0.7) * 30.0)
+        risk = 30.0 + (balance_ratio * 18.0) + (on_time_gap * 100.0) + delay_penalty + overdue_penalty + trend_penalty + ratio_penalty
+        risk = max(0.0, min(100.0, risk - ((customer.reliability_score or 75.0) * 0.35)))
+
         factors = []
         if customer.avg_payment_delay_days > 7:
             factors.append("average payment delay is above 7 days")
@@ -25,15 +33,15 @@ class AIIntelligenceService:
             factors.append("on-time payment rate is below 75%")
         if customer.behavior_trend == "DETERIORATING":
             factors.append("recent payment behavior is deteriorating")
-        if outstanding > customer.credit_limit:
+        if outstanding > credit_limit:
             factors.append("outstanding balance exceeds credit limit")
         overdue_invoices = sum(1 for invoice in customer.invoices if invoice.outstanding_amount > 0 and invoice.due_date and invoice.due_date.date() < datetime.utcnow().date())
         if overdue_invoices:
             risk = min(100.0, risk + min(20.0, overdue_invoices * 5.0))
             factors.append(f"{overdue_invoices} outstanding invoice(s) are overdue")
-        history_quality = min(1.0, (customer.total_transactions_count or 0) / 10.0)
         if history_quality < 0.3:
             factors.append("limited payment history reduces prediction confidence")
+
         return {
             "customer_id": customer.id,
             "customer_name": customer.name,
@@ -73,6 +81,7 @@ class AIIntelligenceService:
 
     @staticmethod
     def overview(db: Session) -> Dict:
+        ml_repayment_service.refresh_if_needed(db)
         cashflow = CashflowService.forecast_7_15_days(db, forecast_days=15)
         plan = DecisionEngine.generate_daily_action_plan(db)
         customers = [AIIntelligenceService._customer_risk(customer) for customer in db.query(Customer).all()]

@@ -18,7 +18,7 @@ export const AIWorkspace: React.FC = () => {
     const [invoiceResult, setInvoiceResult] = useState<{ confidence: number; duplicate_risk: string; warnings: string[]; recommended_action: string } | null>(null);
     const [chatInput, setChatInput] = useState('');
     const [chatMessages, setChatMessages] = useState<Array<{ id: string; sender: 'owner' | 'intelligence'; text: string; type?: string; time: string }>>([
-        { id: 'welcome', sender: 'intelligence', text: 'I can read your sales, bills, expenses, cash forecast, and approvals. Ask me what needs attention next.', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+        { id: 'welcome', sender: 'intelligence', text: 'I can check your sales, bills, costs, cash, and customer payments. Ask me what needs attention today.', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
     ]);
     const [chatLoading, setChatLoading] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
@@ -26,6 +26,20 @@ export const AIWorkspace: React.FC = () => {
     const [error, setError] = useState('');
 
     const loadOverview = async () => { setLoading(true); setError(''); try { const response = await api.getAIOverview(); setOverview({ ...response, cashflow: response.cashflow || emptyCashflow, agents: response.agents || [], customer_risk: response.customer_risk || [], supplier_optimization: response.supplier_optimization || [], expense_signals: response.expense_signals || [], model_quality: response.model_quality || { observed_invoice_outcomes: 0, data_quality: 0, confidence_note: 'Model evidence will appear as payment outcomes accumulate.' }, explainability: response.explainability || { method: 'Rules and historical behavior', llm_controls: 'No direct ledger mutation', human_approval: 'Required for high-value actions' } }); } catch (err) { setError(err instanceof Error ? err.message : 'Unable to load intelligence'); } finally { setLoading(false); } };
+    const retrainModel = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const result = await api.retrainAIModel();
+            const nextMessage = result.status === 'trained' ? `AI learned from ${result.sample_size} live business records.` : 'AI model refresh finished.';
+            setChatMessages((messages) => [...messages, { id: `${Date.now()}-training`, sender: 'intelligence', text: nextMessage, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+            await loadOverview();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Unable to retrain model');
+        } finally {
+            setLoading(false);
+        }
+    };
     useEffect(() => { loadOverview(); }, []);
     const askIntelligence = async (question = chatInput) => {
         const trimmed = question.trim();
@@ -42,20 +56,35 @@ export const AIWorkspace: React.FC = () => {
         } finally { setChatLoading(false); }
     };
     useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages, chatLoading]);
-    if (loading && !overview) return <div className="glass-panel rounded-2xl p-6 text-sm text-[#5d5f5f]">Loading your business insights...</div>;
-    if (!overview) return <StatusScreen title="AI insights are not available" message={error || 'We could not load your business insights. Check the backend and try again.'} onAction={loadOverview} busy={loading} />;
+    if (loading && !overview) return <div className="glass-panel rounded-2xl p-6 text-sm text-[#5d5f5f]">Loading your business details...</div>;
+    if (!overview) return <StatusScreen title="AI help is not ready" message={error || 'We could not load your business details. Please check the backend and try again.'} onAction={loadOverview} busy={loading} tone="error" />;
+    if (overview.customer_risk.length === 0 && overview.action_plan.action_items.length === 0) {
+        return (
+            <StatusScreen
+                title="No AI data yet"
+                message="Add buyers, sales, or imported files to give the AI enough live business data to predict payment risk and cash needs."
+                actionLabel="Refresh data"
+                onAction={loadOverview}
+                busy={loading}
+                tone="info"
+            />
+        );
+    }
 
     return <div className="space-y-6">
         <header className="glass-panel rounded-2xl p-6 border-l-4 border-l-cyan-500">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div><div className="flex items-center gap-2 text-sm font-bold"><BrainCircuit size={18} /> CashPilot AI</div><h1 className="text-2xl md:text-3xl font-bold mt-2">Clear answers for your business</h1><p className="text-sm text-[#5d5f5f] mt-2 max-w-3xl">AI checks your money coming in, bills, cash, customers, suppliers, and expenses. You stay in control of every action.</p></div>
-                <button onClick={loadOverview} disabled={loading} className="border border-black rounded-lg px-3 py-2 text-sm font-bold inline-flex items-center gap-2"><RefreshCw size={15} className={loading ? 'animate-spin' : ''} /> Refresh intelligence</button>
-                <div className="text-right"><div className="text-[10px] uppercase tracking-wider text-[#5d5f5f]">15-day minimum cash</div><div className="text-2xl font-bold">{money(overview.cashflow.min_projected_cash)}</div></div>
+                <div><div className="flex items-center gap-2 text-sm font-bold"><BrainCircuit size={18} /> CashPilot AI</div><h1 className="text-2xl md:text-3xl font-bold mt-2">Simple business help</h1><p className="text-sm text-[#5d5f5f] mt-2 max-w-3xl">This AI checks your sales, bills, cash, buyers, and costs. It helps you know what to do next in simple words.</p></div>
+                <div className="flex items-center gap-2">
+                    <button onClick={loadOverview} disabled={loading} className="border border-black rounded-lg px-3 py-2 text-sm font-bold inline-flex items-center gap-2"><RefreshCw size={15} className={loading ? 'animate-spin' : ''} /> Refresh</button>
+                    <button onClick={retrainModel} disabled={loading} className="bg-black text-white rounded-lg px-3 py-2 text-sm font-bold inline-flex items-center gap-2"><BrainCircuit size={15} /> Learn from live data</button>
+                </div>
+                <div className="text-right"><div className="text-[10px] uppercase tracking-wider text-[#5d5f5f]">Cash needed for 15 days</div><div className="text-2xl font-bold">{money(overview.cashflow.min_projected_cash)}</div></div>
             </div>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">{overview.agents.map((agent) => <div key={agent.name} className="bg-white border border-[#d9d2ca] rounded-xl p-4"><div className="flex items-center justify-between"><span className="font-bold text-sm">{agent.name}</span><CheckCircle2 size={16} className="text-emerald-600" /></div><div className="text-xs text-[#5d5f5f] mt-2">{agent.focus}</div></div>)}</div>
         <section className="glass-panel rounded-2xl overflow-hidden">
-            <div className="p-5 border-b border-[#d9d2ca] flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><h2 className="font-bold flex items-center gap-2"><BrainCircuit size={17} /> Ask CashPilot Intelligence</h2><p className="text-xs text-[#5d5f5f] mt-1">Ask anything about your business numbers, decisions, or risks. Answers use live ledger context.</p></div><div className="flex items-center gap-2"><span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">Live ledger context</span><button onClick={() => setChatMessages([chatMessages[0]])} title="Clear conversation" aria-label="Clear conversation" className="p-2 border border-[#cfc4c5] rounded-lg"><Trash2 size={15} /></button></div></div>
+            <div className="p-5 border-b border-[#d9d2ca] flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><h2 className="font-bold flex items-center gap-2"><BrainCircuit size={17} /> Ask CashPilot</h2><p className="text-xs text-[#5d5f5f] mt-1">Ask about money, payments, risks, and next steps. Answers are based on your live numbers.</p></div><div className="flex items-center gap-2"><span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">Live business data</span><button onClick={() => setChatMessages([chatMessages[0]])} title="Clear conversation" aria-label="Clear conversation" className="p-2 border border-[#cfc4c5] rounded-lg"><Trash2 size={15} /></button></div></div>
             <div className="p-5 min-h-[210px] max-h-[360px] overflow-y-auto space-y-3">{chatMessages.map((message) => <div key={message.id} className={`flex ${message.sender === 'owner' ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${message.sender === 'owner' ? 'bg-black text-white rounded-br-sm' : 'bg-white border border-[#d9d2ca] text-[#1b1b1b] rounded-bl-sm'}`}><div className="whitespace-pre-wrap">{message.text.split(/(\*\*.*?\*\*)/g).map((part, index) => part.startsWith('**') && part.endsWith('**') ? <strong key={index}>{part.slice(2, -2)}</strong> : part)}</div><div className="mt-2 flex items-center justify-between gap-4 text-[10px] opacity-60"><span>{message.time}</span>{message.sender === 'intelligence' && <button onClick={() => navigator.clipboard?.writeText(message.text)} title="Copy response" aria-label="Copy response"><Copy size={12} /></button>}</div>{message.type && <div className="mt-2 text-[10px] uppercase tracking-wider font-bold text-cyan-700">{message.type.replace(/_/g, ' ')}</div>}</div></div>)}{chatLoading && <div className="text-xs text-[#5d5f5f]">Analyzing your ledger and cash forecast...</div>}<div ref={chatEndRef} /></div>
             <div className="px-5 pb-3 flex gap-2 overflow-x-auto no-scrollbar">{['Give me a business summary', 'Who should I collect from today?', 'What is my liquidity forecast?', 'Which supplier should I pay first?', 'What can you do?'].map((question) => <button key={question} onClick={() => askIntelligence(question)} className="shrink-0 border border-[#cfc4c5] bg-white rounded-full px-3 py-1.5 text-xs font-bold text-[#1b1b1b]">{question}</button>)}</div>
             <div className="p-4 border-t border-[#d9d2ca] bg-white/60 flex gap-2"><textarea rows={2} value={chatInput} onChange={(event) => setChatInput(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); askIntelligence(); } }} placeholder="Ask anything about cash, collections, risk, payables, expenses, or decisions..." className="flex-1 border border-[#cfc4c5] rounded-xl px-4 py-3 text-sm outline-none focus:border-black resize-none" /><button onClick={() => askIntelligence()} disabled={chatLoading} className="bg-black text-white rounded-xl px-4 py-3 self-end inline-flex items-center gap-2 text-sm font-bold disabled:opacity-50"><SendHorizontal size={16} /> Ask</button></div>

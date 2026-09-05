@@ -34,23 +34,23 @@ export const CustomersView: React.FC<CustomersViewProps> = ({ customers, onSelec
                 <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-5">
                     <div>
                         <h1 className="text-[24px] md:text-[30px] font-bold tracking-tight text-black" style={{ fontFamily: headingFont }}>
-                            Customer Payment Intelligence
+                            Buyer payment details
                         </h1>
                         <p className="text-[13px] text-[#5d5f5f] mt-1 max-w-3xl">
-                            Evidence-based reliability, payment timing, current exposure, and behavior change detection for every retailer account.
+                            See who pays on time, who delays, and how much money is still due from each buyer.
                         </p>
                     </div>
                     <div className="grid grid-cols-3 gap-3 w-full xl:w-auto">
                         <div className="bg-white/70 border border-[#cfc4c5]/40 rounded-xl p-3 min-w-[150px]">
-                            <div className="text-[10px] uppercase tracking-wider text-[#5d5f5f]">Customers</div>
+                            <div className="text-[10px] uppercase tracking-wider text-[#5d5f5f]">Buyers</div>
                             <div className="text-xl font-bold text-black">{filtered.length}</div>
                         </div>
                         <div className="bg-white/70 border border-[#cfc4c5]/40 rounded-xl p-3 min-w-[150px]">
-                            <div className="text-[10px] uppercase tracking-wider text-[#5d5f5f]">Outstanding</div>
+                            <div className="text-[10px] uppercase tracking-wider text-[#5d5f5f]">Still due</div>
                             <div className="text-xl font-bold text-black">{money(totalOutstanding)}</div>
                         </div>
                         <div className="bg-white/70 border border-[#cfc4c5]/40 rounded-xl p-3 min-w-[150px]">
-                            <div className="text-[10px] uppercase tracking-wider text-[#5d5f5f]">Avg Score</div>
+                            <div className="text-[10px] uppercase tracking-wider text-[#5d5f5f]">Average score</div>
                             <div className="text-xl font-bold text-black">{averageReliability.toFixed(1)}</div>
                         </div>
                     </div>
@@ -62,7 +62,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({ customers, onSelec
                         <input
                             value={query}
                             onChange={(event) => setQuery(event.target.value)}
-                            placeholder="Search customer"
+                            placeholder="Search buyer"
                             className="bg-transparent outline-none text-sm text-black w-full"
                         />
                     </label>

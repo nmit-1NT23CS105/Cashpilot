@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from ..database.models import Customer, Invoice, Payment
+from .ml_repayment_service import ml_repayment_service
 
 class CustomerIntelligenceService:
     @staticmethod
@@ -60,4 +61,5 @@ class CustomerIntelligenceService:
             cust.behavior_trend = "STABLE"
 
         db.commit()
+        ml_repayment_service.refresh_if_needed(db)
         return cust

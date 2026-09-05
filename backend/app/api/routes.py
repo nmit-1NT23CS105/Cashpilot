@@ -818,7 +818,7 @@ def get_receivables(db: Session = Depends(get_db)):
                 "confidence": stored_prediction.confidence_level,
             }
         else:
-            pred = ml_repayment_service.predict_invoice_repayment(cust, inv.outstanding_amount)
+            pred = ml_repayment_service.predict_invoice_repayment(cust, inv.outstanding_amount, db)
         prob = pred["repayment_probability_15d"]
         exp_days = pred["expected_payment_days"]
 
@@ -1082,6 +1082,11 @@ def get_ai_insights(db: Session = Depends(get_db)):
 @router.get("/ai/overview")
 def get_ai_overview(db: Session = Depends(get_db)):
     return AIIntelligenceService.overview(db)
+
+@router.post("/ai/retrain")
+def retrain_ai_model(db: Session = Depends(get_db)):
+    result = ml_repayment_service.retrain_live_model(db)
+    return result
 
 @router.post("/ai/invoice/analyze")
 def analyze_invoice_with_ai(payload: Dict = Body(...)):

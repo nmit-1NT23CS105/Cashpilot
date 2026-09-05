@@ -24,18 +24,18 @@ interface NavbarProps {
 const headingFont = 'Manrope, Inter, system-ui, sans-serif';
 
 const tabs = [
-    { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'cashflow', label: 'Cash Flow', icon: LineChart },
-    { id: 'receivables', label: 'Money to collect', icon: WalletCards },
-    { id: 'customers', label: 'Customers', icon: UsersRound },
-    { id: 'payables', label: 'Bills to pay', icon: ReceiptText },
-    { id: 'expenses', label: 'Expenses', icon: ClipboardList },
-    { id: 'ledger', label: 'Money record', icon: Scale },
-    { id: 'actions', label: 'AI suggestions', icon: Activity },
-    { id: 'simulator', label: 'Simulator', icon: Gauge },
+    { id: 'overview', label: 'Home', icon: LayoutDashboard },
+    { id: 'cashflow', label: 'Cash', icon: LineChart },
+    { id: 'receivables', label: 'Collect money', icon: WalletCards },
+    { id: 'customers', label: 'Buyers', icon: UsersRound },
+    { id: 'payables', label: 'Pay bills', icon: ReceiptText },
+    { id: 'expenses', label: 'Costs', icon: ClipboardList },
+    { id: 'ledger', label: 'Money log', icon: Scale },
+    { id: 'actions', label: 'Helpful tips', icon: Activity },
+    { id: 'simulator', label: 'Try plan', icon: Gauge },
     { id: 'reports', label: 'Reports', icon: FileText },
     { id: 'ai', label: 'Ask AI', icon: Bot },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'settings', label: 'More', icon: Settings },
 ];
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -72,7 +72,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
 
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 xl:pb-0 min-w-0 w-full xl:w-auto max-w-full">
-                    <button onClick={onOpenOwner} className="border border-black text-black text-[13px] font-bold px-3 py-2 rounded-full hover:bg-black hover:text-white transition-all whitespace-nowrap">Owner: {ownerName}</button>
+                    <button onClick={onOpenOwner} className="border border-black text-black text-[13px] font-bold px-3 py-2 rounded-full hover:bg-black hover:text-white transition-all whitespace-nowrap">Business owner: {ownerName}</button>
                 </div>
             </div>
 
